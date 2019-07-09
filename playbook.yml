@@ -1,0 +1,9 @@
+---
+
+- name: provision instance
+  hosts: all
+  roles:
+    - nginx
+    - conda
+    - rstudio
+    - jupyter

@@ -1,0 +1,32 @@
+---
+
+- name: create jupyter env
+  become: yes
+  command: /opt/Miniconda3/bin/conda create -p /opt/Miniconda3/envs/jupyter -y -c conda-forge jupyterhub notebook jupyterlab
+  args:
+    creates: /opt/Miniconda3/envs/jupyter
+
+- name: copy systemd service
+  become: yes
+  template:
+    src: jupyterhub.service
+    dest: /etc/systemd/system/jupyterhub.service
+
+- name: setup jupyterhub config dir
+  become: yes
+  file:
+    path: /etc/jupyterhub
+    state: directory
+
+- name: copy jupyterhub config
+  become: yes
+  template:
+    src: jupyterhub_config.py
+    dest: /etc/jupyterhub/jupyterhub_config.py
+
+- name: enable jupyterhub service
+  become: yes
+  service:
+    name: jupyterhub
+    enabled: yes
+    state: started

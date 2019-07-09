@@ -1,0 +1,41 @@
+---
+
+- name: get nginx apt key
+  become: yes
+  apt_key:
+    url: https://nginx.org/keys/nginx_signing.key
+    state: present
+
+- name: set up nginx apt repo
+  become: yes
+  apt_repository:
+    repo: "{{ item }}"
+    state: present
+  with_items:
+    - deb http://nginx.org/packages/ubuntu/ bionic nginx
+    - deb-src http://nginx.org/packages/ubuntu/ bionic nginx
+
+- name: install nginx
+  become: yes
+  apt:
+    name: nginx
+    state: present
+    update_cache: true
+
+- name: remove default nginx configuration
+  become: yes
+  file:
+    path: /etc/nginx/sites-enabled
+    state: absent
+  notify:
+    - stop nginx
+    - start nginx
+
+- name: copy new nginx configuration
+  become: yes
+  template:
+    src: nginx.conf
+    dest: /etc/nginx/nginx.conf
+  notify:
+    - stop nginx
+    - start nginx

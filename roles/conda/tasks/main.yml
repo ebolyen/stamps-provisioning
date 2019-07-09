@@ -1,0 +1,20 @@
+---
+
+- name: download conda install script
+  become: yes
+  get_url:
+    url: https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+    dest: /opt/Miniconda3-latest-Linux-x86_64.sh
+
+- name: run conda installer
+  become: yes
+  command: bash /opt/Miniconda3-latest-Linux-x86_64.sh -bp /opt/Miniconda3
+  args:
+    creates: /opt/Miniconda3
+
+- name: update conda
+  become: yes
+  command: /opt/Miniconda3/bin/conda update -y conda
+
+- name: setup conda for bash
+  command: /opt/Miniconda3/bin/conda init bash

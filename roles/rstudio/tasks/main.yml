@@ -1,0 +1,42 @@
+---
+
+- name: add r-base signing key
+  become: yes
+  apt_key:
+    keyserver: keyserver.ubuntu.com
+    id: E298A3A825C0D65DFD57CBB651716619E084DAB9
+
+- name: add r-base PPA
+  become: yes
+  apt_repository:
+    repo: deb https://cloud.r-project.org/bin/linux/ubuntu bionic-cran35/
+    state: present
+
+- name: install r-base
+  become: yes
+  apt:
+    name: r-base
+    state: present
+    update_cache: true
+
+- name: add recommended backports PPA for r
+  become: yes
+  apt_repository:
+    repo: deb http://archive.ubuntu.com/ubuntu/ bionic-backports main restricted universe
+    state: present
+
+- name: install gdebi installer
+  become: yes
+  apt:
+    name: gdebi
+    state: present
+
+- name: download rstudio server deb file
+  get_url:
+    url: https://download2.rstudio.org/server/bionic/amd64/rstudio-server-1.2.1335-amd64.deb
+    dest: /tmp/rstudio.deb
+
+- name: install rstudio server
+  become: yes
+  command: /usr/bin/gdebi --non-interactive /tmp/rstudio.deb
+
